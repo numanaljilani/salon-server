@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  email         String           @unique
+  password      String
+  name          String
+  phoneNumber   String?          @unique
+  verified      Boolean          @default(false)
+  avatar        String?
+  role          UserRole
+  ownedSalons   Salon[]          @relation("OwnerSalons")
+  workers       SalonWorker[]    @relation("WorkerOwner")
+  visitedSalons VisitedSalon[]
+  appointments  Appointment[]
+  chatsSent     Chat[]           @relation("SenderChats")
+  chatsReceived Chat[]           @relation("ReceiverChats")
+  reviews       Review[]
+  profile       CustomerProfile?
+  payments      Payment[]
+  reminders     Reminder[]
+
+  loyaltyPrograms LoyaltyProgram[]
+  otps            Otp[]            @relation("UserOtps")
+}
+
+model Otp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  code      String   @unique
+  expiresAt DateTime
+  userId    String   @db.ObjectId
+  user      User     @relation("UserOtps", fields: [userId], references: [id])
+}
+
+model Salon {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  address       String
+  isVerified    Boolean        @default(false)
+  ownerId       String         @db.ObjectId
+  description String
+  owner         User           @relation("OwnerSalons", fields: [ownerId], references: [id])
+  workers       SalonWorker[]
+  services      Service[]
+  inventory     Inventory[]
+  appointments  Appointment[]
+  reviews       Review[]
+  branches      Branch[]
+  analytics     Analytics[]
+  campaigns     Campaign[]
+  visitedSalons VisitedSalon[]
+}
+
+model Service {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  salonId      String        @db.ObjectId
+  name         String
+  description  String
+  price        Float
+  duration     Int // Duration in minutes
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  salon        Salon         @relation(fields: [salonId], references: [id])
+  appointments Appointment[]
+}
+
+model SalonWorker {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  salonId     String        @db.ObjectId
+  salon       Salon         @relation(fields: [salonId], references: [id])
+  ownerId     String        @db.ObjectId
+  owner       User          @relation("WorkerOwner", fields: [ownerId], references: [id])
+  shifts      Shift[]
+  performance Performance[]
+  branchId    String        @db.ObjectId
+  branch      Branch        @relation(fields: [branchId], references: [id])
+}
+
+model Appointment {
+  id         String            @id @default(auto()) @map("_id") @db.ObjectId
+  date       DateTime
+  status     AppointmentStatus
+  customerId String            @db.ObjectId
+  customer   User              @relation(fields: [customerId], references: [id])
+  salonId    String            @db.ObjectId
+  salon      Salon             @relation(fields: [salonId], references: [id])
+  serviceId  String            @db.ObjectId
+  service    Service           @relation(fields: [serviceId], references: [id])
+  payment    Payment?
+}
+
+model VisitedSalon {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId
+  user    User   @relation(fields: [userId], references: [id])
+  salonId String @db.ObjectId
+  salon   Salon  @relation(fields: [salonId], references: [id])
+}
+
+model Chat {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId   String   @db.ObjectId
+  receiverId String   @db.ObjectId
+  message    String
+  timestamp  DateTime @default(now())
+  sender     User     @relation("SenderChats", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceiverChats", fields: [receiverId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  rating    Int
+  comment   String
+  timestamp DateTime @default(now())
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  salonId   String   @db.ObjectId
+  salon     Salon    @relation(fields: [salonId], references: [id])
+}
+
+model Inventory {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  quantity     Int
+  reorderLevel Int
+  supplier     String
+  salonId      String @db.ObjectId
+  salon        Salon  @relation(fields: [salonId], references: [id])
+}
+
+model Branch {
+  id      String        @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  address String
+  salonId String        @db.ObjectId
+  salon   Salon         @relation(fields: [salonId], references: [id])
+  workers SalonWorker[]
+}
+
+model Shift {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  startTime DateTime
+  endTime   DateTime
+  workerId  String      @db.ObjectId
+  worker    SalonWorker @relation(fields: [workerId], references: [id])
+}
+
+model Performance {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  rating     Int
+  comments   String?
+  reviewDate DateTime
+  workerId   String      @db.ObjectId
+  worker     SalonWorker @relation(fields: [workerId], references: [id])
+}
+
+model CustomerProfile {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String @unique @db.ObjectId
+  user          User   @relation(fields: [userId], references: [id])
+  beautyHistory String
+  preferences   String
+}
+
+model Payment {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  amount        Float
+  date          DateTime
+  method        PaymentMethod
+  status        PaymentStatus
+  appointmentId String        @unique @db.ObjectId
+  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
+  userId        String        @db.ObjectId
+  user          User          @relation(fields: [userId], references: [id])
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Reminder {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  content  String
+  dateTime DateTime
+  userId   String   @db.ObjectId
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model Analytics {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  metric    String
+  value     Float
+  timestamp DateTime @default(now())
+  salonId   String   @db.ObjectId
+  salon     Salon    @relation(fields: [salonId], references: [id])
+}
+
+model Campaign {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  salonId     String   @db.ObjectId
+  salon       Salon    @relation(fields: [salonId], references: [id])
+}
+
+model LoyaltyProgram {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  points      Int
+  description String
+  userId      String @db.ObjectId
+  user        User   @relation(fields: [userId], references: [id])
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  SALON_WORKER
+  CUSTOMER
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  RESCHEDULED
+}

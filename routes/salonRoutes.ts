@@ -1,8 +1,9 @@
 import express from "express";
 import signup from "../controllers/auth/signupController";
 import {  admin_login, login } from "../controllers/auth/loginController";
-import { createsalon, mysalons, salonvarification, updatesalon } from "../controllers/salon/salonController";
+import { createsalon, mysalons, salon, salonvarification, updatesalon, visitedSalons, visitSalon } from "../controllers/salon/salonController";
 import { createstylist, removestylist, updatestylist } from "../controllers/salon/styelistController";
+import { isAdmin, isAuthenticated } from "../middlewares/auth";
 
 const router = express.Router();
 
@@ -11,25 +12,28 @@ const router = express.Router();
 
 
 // ---------------------------------------- customers ------------------------------------------//
-router.post("/register", signup);
-
-router.post("/login",login)
+router.get("/visited-salons",isAuthenticated ,  visitedSalons);
+router.post("/visit-salon",isAuthenticated , visitSalon)
 
 
 // ---------------------------------- admin ------------------------------------//
 
-router.post("/create-salon",createsalon)
-router.put("/update-salon",updatesalon)
+router.post("/create-salon",isAuthenticated,isAdmin,createsalon)
+router.put("/update-salon",isAuthenticated,isAdmin,updatesalon)
 // router.delete("/delete-salon",admin_login)
-router.get("/salons",mysalons) // my all salons
+router.post("/salons",isAuthenticated,isAdmin,mysalons) // my all salons
+router.get("/salon/:id",isAuthenticated,isAdmin,salon) // salon details 
 
-router.post('/create-stylist' , createstylist)
-router.put('/update-stylist' , updatestylist)
-router.put('/remove-stylist' , removestylist)
+// router.post("/salons",isAuthenticated,isAdmin,mysalons) // Add services in salon
+
+
+router.post('/create-stylist' ,isAuthenticated,isAdmin, createstylist)
+router.put('/update-stylist' , isAuthenticated,isAdmin,updatestylist)
+router.put('/remove-stylist' ,isAuthenticated,isAdmin, removestylist)
 
 // ---------------------------------- admin super admin ------------------------------------//
 router.put("/salons/:id/block" , salonvarification)
-router.put("/salons/" , admin_login)
+// router.put("/salons/" , admin_login)
 
 
 export default router;

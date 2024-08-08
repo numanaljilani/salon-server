@@ -9,6 +9,7 @@ export const isAuthenticated = async (
   next: NextFunction
 ) => {
   let authHeader = req.headers.authorization;
+  console.log(authHeader , "AuthHeaders")
 
   if (authHeader === "bearer null" || authHeader === "bearer undefined")
     return next(CustomErrorHandler.unAuthorized());

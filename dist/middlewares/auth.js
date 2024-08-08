@@ -8,6 +8,7 @@ const CustomErrorHandler_1 = __importDefault(require("../services/error/CustomEr
 const JwtService_1 = __importDefault(require("../services/jwt/JwtService"));
 const isAuthenticated = async (req, res, next) => {
     let authHeader = req.headers.authorization;
+    console.log(authHeader, "AuthHeaders");
     if (authHeader === "bearer null" || authHeader === "bearer undefined")
         return next(CustomErrorHandler_1.default.unAuthorized());
     try {

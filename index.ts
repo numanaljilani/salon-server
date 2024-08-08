@@ -2,8 +2,12 @@ import express, { Request, Response } from "express";
 const app = express();
 
 import authRoutes from "./routes/authRoutes";
+import salonRoutes from "./routes/salonRoutes"
+import appointmentRoutes from './routes/appointmentRoutes'
 import errorHandler from "./middlewares/errorHandler";
 import cors from 'cors'
+import path from 'path'
+
 
 app.use(express.json());
 app.use(cors())
@@ -16,6 +20,12 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api", authRoutes);
+app.use("/api", salonRoutes);
+app.use("/api", appointmentRoutes);
+
+app.use("/uploads", express.static("uploads"));
+
+// global.appRoot : any = path.resolve(path.resolve());
 
 app.use(errorHandler);
 

@@ -3,6 +3,8 @@ import signup from "../controllers/auth/signupController";
 import {  admin_login, login } from "../controllers/auth/loginController";
 import { createsalon, mysalons, salonvarification, updatesalon } from "../controllers/salon/salonController";
 import { createstylist, removestylist, updatestylist } from "../controllers/salon/styelistController";
+import { isAuthenticated } from "../middlewares/auth";
+import { createAppointment, myappointment, updateAppointment } from "../controllers/appointments/appointmentController";
 
 const router = express.Router();
 
@@ -11,9 +13,9 @@ const router = express.Router();
 
 
 // ---------------------------------------- customers / stylist ------------------------------------------//
-router.get("/my-appointments", signup);
-router.post("/create-appointment", signup);
-router.put("/update-appointments", signup); // cancel, update , reject , reschedule 
+router.get("/my-appointments", isAuthenticated , myappointment);
+router.post("/create-appointment", isAuthenticated , createAppointment);
+router.put("/update-appointments",isAuthenticated ,updateAppointment); // cancel, update , reject , reschedule 
 
 
 router.get('/appointment-slots',signup)
@@ -21,12 +23,7 @@ router.get('/appointment-slots',signup)
 
 router.get("/salon-appintments",createsalon) // can see all salons appointmets / wprking by date also
 router.put("/update-salon",updatesalon)
-// router.delete("/delete-salon",admin_login)
 router.get("/salons",mysalons) // my all salons
-
-router.post('/create-stylist' , createstylist)
-router.put('/update-stylist' , updatestylist)
-router.put('/remove-stylist' , removestylist)
 
 // ---------------------------------- admin super admin ------------------------------------//
 

@@ -15,6 +15,8 @@ model User {
   phoneNumber   String?          @unique
   verified      Boolean          @default(false)
   avatar        String?
+  createdAt     DateTime         @default(now())
+  workingSalon  SalonWorker?     @relation("Worker")
   role          UserRole
   ownedSalons   Salon[]          @relation("OwnerSalons")
   workers       SalonWorker[]    @relation("WorkerOwner")
@@ -40,29 +42,41 @@ model Otp {
 }
 
 model Salon {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  address       String
-  isVerified    Boolean        @default(false)
-  ownerId       String         @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  address     String
+  isVerified  Boolean  @default(false)
+  ownerId     String   @db.ObjectId
   description String
+  contact     String?
+  status      String   @default("Closed")
+  createdAt   DateTime @default(now())
+  images      Image[]
+
   owner         User           @relation("OwnerSalons", fields: [ownerId], references: [id])
   workers       SalonWorker[]
   services      Service[]
   inventory     Inventory[]
   appointments  Appointment[]
   reviews       Review[]
-  branches      Branch[]
   analytics     Analytics[]
   campaigns     Campaign[]
   visitedSalons VisitedSalon[]
+}
+
+model Image {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  salonId   String   @db.ObjectId
+  salon     Salon    @relation(fields: [salonId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Service {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   salonId      String        @db.ObjectId
   name         String
-  description  String
+  description  String?
   price        Float
   duration     Int // Duration in minutes
   createdAt    DateTime      @default(now())
@@ -73,21 +87,22 @@ model Service {
 
 model SalonWorker {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
   salonId     String        @db.ObjectId
+  createdAt   DateTime      @default(now())
   salon       Salon         @relation(fields: [salonId], references: [id])
   ownerId     String        @db.ObjectId
   owner       User          @relation("WorkerOwner", fields: [ownerId], references: [id])
+  workerId    String        @unique @db.ObjectId
+  worker      User          @relation("Worker", fields: [workerId], references: [id])
   shifts      Shift[]
   performance Performance[]
-  branchId    String        @db.ObjectId
-  branch      Branch        @relation(fields: [branchId], references: [id])
 }
 
 model Appointment {
   id         String            @id @default(auto()) @map("_id") @db.ObjectId
   date       DateTime
   status     AppointmentStatus
+  createdAt  DateTime          @default(now())
   customerId String            @db.ObjectId
   customer   User              @relation(fields: [customerId], references: [id])
   salonId    String            @db.ObjectId
@@ -98,11 +113,12 @@ model Appointment {
 }
 
 model VisitedSalon {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String @db.ObjectId
-  user    User   @relation(fields: [userId], references: [id])
-  salonId String @db.ObjectId
-  salon   Salon  @relation(fields: [salonId], references: [id])
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  salonId   String   @db.ObjectId
+  salon     Salon    @relation(fields: [salonId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Chat {
@@ -134,15 +150,6 @@ model Inventory {
   supplier     String
   salonId      String @db.ObjectId
   salon        Salon  @relation(fields: [salonId], references: [id])
-}
-
-model Branch {
-  id      String        @id @default(auto()) @map("_id") @db.ObjectId
-  name    String
-  address String
-  salonId String        @db.ObjectId
-  salon   Salon         @relation(fields: [salonId], references: [id])
-  workers SalonWorker[]
 }
 
 model Shift {

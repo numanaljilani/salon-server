@@ -147,7 +147,7 @@ const admin_login = async (req, res, next) => {
             return next(CustomErrorHandler_1.default.wrongCredentials());
         }
         // compare the password
-        const match = await bcrypt_1.default.compare(password, user[0]?.password) || "";
+        const match = (await bcrypt_1.default.compare(password, user[0]?.password)) || "";
         console.log(match, ">>>>>>>>>");
         //if not match sending error with message through custom errror handler
         if (!match) {

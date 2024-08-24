@@ -29,7 +29,7 @@ const myappointment = async (req, res, next) => {
 exports.myappointment = myappointment;
 const createAppointment = async (req, res, next) => {
     try {
-        const { date, time, status, slot, salonId, service } = req.body;
+        const { date, time, status, slot, salonId, service, serviceId } = req.body;
         // TODO Multiple servce booking at a time
         const appointment = await prisma.appointment.create({
             data: {
@@ -37,9 +37,8 @@ const createAppointment = async (req, res, next) => {
                 status,
                 customer: { connect: { id: req.user?.id } },
                 salon: { connect: { id: salonId } },
-                service: {
-                    connect: service,
-                },
+                serviceId: serviceId,
+                service: {},
             },
         });
         res.status(201).json({ success: true, data: appointment });

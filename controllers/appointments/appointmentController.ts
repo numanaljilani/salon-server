@@ -39,7 +39,7 @@ export const createAppointment = async (
   next: NextFunction
 ) => {
   try {
-    const { date, time, status, slot, salonId, service } = req.body;
+    const { date, time, status, slot, salonId, service, serviceId } = req.body;
     // TODO Multiple servce booking at a time
     const appointment = await prisma.appointment.create({
       data: {
@@ -47,9 +47,7 @@ export const createAppointment = async (
         status,
         customer: { connect: { id: req.user?.id } },
         salon: { connect: { id: salonId } },
-        service: {
-          connect: service,
-        },
+        service: { connect: { id: service.id } },
       },
     });
 

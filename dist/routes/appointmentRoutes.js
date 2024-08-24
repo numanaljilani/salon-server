@@ -19,6 +19,6 @@ router.get('/appointment-slots', signupController_1.default);
 // ---------------------------------- admin ------------------------------------//
 router.get("/salon-appintments", salonController_1.createsalon); // can see all salons appointmets / wprking by date also
 router.put("/update-salon", salonController_1.updatesalon);
-router.get("/salons", salonController_1.mysalons); // my all salons
+router.get("/get-salons", salonController_1.mysalons); // my all salons
 // ---------------------------------- admin super admin ------------------------------------//
 exports.default = router;

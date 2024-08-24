@@ -126,7 +126,7 @@ export const register_owner = async (req: Request, res: Response, next: NextFunc
   // Validation
   const registerSchema = Joi.object({
     firstName: Joi.string().min(3).max(30).required(),
-    lastName: Joi.string().min(3).max(30).required(),
+    lastName: Joi.string(),
     email: Joi.string()
       .email()
       .required()

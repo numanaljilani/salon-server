@@ -22,9 +22,9 @@ router.put("/cancel-appointments",isAuthenticated ,cancelAppointment); // cancel
 router.get('/appointment-slots',signup)
 // ---------------------------------- admin ------------------------------------//
 
-// router.get("/salon-appintments",createsalon) // can see all salons appointmets / wprking by date also
-// router.put("/update-salon",updatesalon)
-// router.get("/salons",mysalons) // my all salons
+router.get("/salon-appintments",createsalon) // can see all salons appointmets / wprking by date also
+router.put("/update-salon",updatesalon)
+router.get("/get-salons",mysalons) // my all salons
 
 // ---------------------------------- admin super admin ------------------------------------//
 

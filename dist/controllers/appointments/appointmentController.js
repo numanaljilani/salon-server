@@ -27,8 +27,33 @@ const myappointment = async (req, res, next) => {
     }
 };
 exports.myappointment = myappointment;
+// export const createAppointment = async (
+//   req: MiddlewareInterface,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { date, time, status, slot, salonId, service, serviceId } = req.body;
+//     // TODO Multiple servce booking at a time
+//     const appointment = await prisma.appointment.create({
+//       data: {
+//         date,
+//         status,
+//         customer: { connect: { id: req.user?.id } },
+//         salon: { connect: { id: salonId } },
+//         service: { connect: { id: service.id } },
+//       },
+//     });
+//     res.status(201).json({ success: true, data: appointment });
+//   } catch (error: any) {
+//     res
+//       .status(400)
+//       .json({ error: "Unable to create Appointment", details: error.message });
+//   }
+// };
 const createAppointment = async (req, res, next) => {
     try {
+<<<<<<< HEAD
         const { date, time, status, slot, salonId, serviceId } = req.body;
         // TODO Multiple servce booking at a time
         const appointment = await prisma.appointment.create({
@@ -40,6 +65,19 @@ const createAppointment = async (req, res, next) => {
                 service: {
                     connect: serviceId,
                 },
+=======
+        const { date, status, salonId, serviceId } = req.body;
+        if (!date || !status || !salonId || !serviceId) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+        const appointment = await prisma.appointment.create({
+            data: {
+                date: new Date(date),
+                status: status,
+                customer: { connect: { id: req.user?.id } },
+                salon: { connect: { id: salonId } },
+                service: { connect: { id: serviceId } },
+>>>>>>> 6922cb1664132fc0923fb8fe26e92e9b80cef824
             },
         });
         res.status(201).json({ success: true, data: appointment });

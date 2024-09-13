@@ -98,7 +98,7 @@ const register_owner = async (req, res, next) => {
     // Validation
     const registerSchema = joi_1.default.object({
         firstName: joi_1.default.string().min(3).max(30).required(),
-        lastName: joi_1.default.string().min(3).max(30).required(),
+        lastName: joi_1.default.string(),
         email: joi_1.default.string()
             .email()
             .required()

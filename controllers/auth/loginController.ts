@@ -151,12 +151,12 @@ export const admin_login = async (
     emailOrPhoneNumber: Joi.string().required(),
     password: Joi.string().required(),
   });
-  console.log(req.body)
+  console.log(req.body);
   const { error } = loginSchema.validate(req.body);
   if (error) {
     return next(error);
   }
-console.log("inside login admin routes")
+  console.log("inside login admin routes");
   const { emailOrPhoneNumber, password }: Login = req.body;
   try {
     // check user is in the database
@@ -176,9 +176,9 @@ console.log("inside login admin routes")
     }
 
     // compare the password
-    
-    const match = await bcrypt.compare(password, user[0]?.password) || "";
-    console.log(match , ">>>>>>>>>")
+
+    const match = (await bcrypt.compare(password, user[0]?.password)) || "";
+    console.log(match, ">>>>>>>>>");
 
     //if not match sending error with message through custom errror handler
     if (!match) {

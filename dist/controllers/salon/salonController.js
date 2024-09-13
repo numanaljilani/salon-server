@@ -136,11 +136,8 @@ const mysalons = async (req, res, next) => {
         console.log("error", error);
     }
     const { skip, take } = req.body;
-    console.log("My Salons", req.user.id);
     try {
-        const salons = await prisma.salon.findMany({
-            where: { ownerId: req.user.id },
-        });
+        const salons = await prisma.salon.findMany({});
         console.log(salons);
         return res.status(200).json({ data: { salons }, success: true });
     }

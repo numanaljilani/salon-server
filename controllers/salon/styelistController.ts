@@ -51,5 +51,61 @@ export const createstylist = async (
       .json({ error: "Unable to create salon worker", details: error.message });
   }
 };
+
+export const salonstylists = async (
+  req: MiddlewareInterface,
+  res: Response,
+  next: NextFunction
+) => {
+  const {
+    salonId,
+  }: {
+    salonId: string;
+  } = req.body;
+
+  try {
+    // const user = await prisma.user.();
+
+    const salonWorkers = await prisma.salonWorker.findMany({where : {
+      salonId 
+    }, include : {
+      worker : true
+    }});
+
+    res.status(201).json({ success: true, data: salonWorkers });
+  } catch (error: any) {
+    res
+      .status(400)
+      .json({ error: "Unable to create salon worker", details: error.message });
+  }
+};
+
+export const servicestylists = async (
+  req: MiddlewareInterface,
+  res: Response,
+  next: NextFunction
+) => {
+  const {
+    salonId,
+  }: {
+    salonId: string;
+  } = req.body;
+
+  try {
+    // const user = await prisma.user.();
+
+    const salonWorkers = await prisma.salonWorker.findMany({where : {
+      salonId 
+    }, include : {
+      worker : true
+    }});
+
+    res.status(201).json({ success: true, data: salonWorkers });
+  } catch (error: any) {
+    res
+      .status(400)
+      .json({ error: "Unable to create salon worker", details: error.message });
+  }
+};
 export const updatestylist = async () => {};
 export const removestylist = async () => {};

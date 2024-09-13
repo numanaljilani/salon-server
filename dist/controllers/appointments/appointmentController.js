@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAppointment = exports.createAppointment = exports.myappointment = void 0;
+exports.cancelAppointment = exports.updateAppointment = exports.createAppointment = exports.myappointment = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const myappointment = async (req, res, next) => {
@@ -29,22 +29,23 @@ const myappointment = async (req, res, next) => {
 exports.myappointment = myappointment;
 const createAppointment = async (req, res, next) => {
     try {
-        const { date, time, status, slot, salonId, service } = req.body;
+        const { date, time, status, slot, salonId, serviceId } = req.body;
         // TODO Multiple servce booking at a time
         const appointment = await prisma.appointment.create({
             data: {
-                date,
+                date: new Date(date),
                 status,
                 customer: { connect: { id: req.user?.id } },
                 salon: { connect: { id: salonId } },
                 service: {
-                    connect: service,
+                    connect: serviceId,
                 },
             },
         });
         res.status(201).json({ success: true, data: appointment });
     }
     catch (error) {
+        console.log(error);
         res
             .status(400)
             .json({ error: "Unable to create Appointment", details: error.message });
@@ -71,3 +72,23 @@ const updateAppointment = async (req, res, next) => {
     }
 };
 exports.updateAppointment = updateAppointment;
+const cancelAppointment = async (req, res, next) => {
+    try {
+        await prisma.appointment.update({
+            where: {
+                id: req.body.id,
+            },
+            data: req.body,
+        });
+        const appointment = await prisma.appointment.findUnique({
+            where: { id: req.body.id },
+        });
+        res.status(201).json({ success: true, data: appointment });
+    }
+    catch (error) {
+        res
+            .status(400)
+            .json({ error: "Unable to create Appointment", details: error.message });
+    }
+};
+exports.cancelAppointment = cancelAppointment;

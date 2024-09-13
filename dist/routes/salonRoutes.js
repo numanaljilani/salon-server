@@ -23,6 +23,8 @@ router.get("/salon/:id", auth_1.isAuthenticated, auth_1.isAdmin, salonController
 router.post('/create-stylist', auth_1.isAuthenticated, auth_1.isAdmin, styelistController_1.createstylist);
 router.put('/update-stylist', auth_1.isAuthenticated, auth_1.isAdmin, styelistController_1.updatestylist);
 router.put('/remove-stylist', auth_1.isAuthenticated, auth_1.isAdmin, styelistController_1.removestylist);
+router.post('/salon-stylist', auth_1.isAuthenticated, styelistController_1.salonstylists);
+router.post('/stylist-services', auth_1.isAuthenticated, styelistController_1.servicestylists);
 // ---------------------------------- admin super admin ------------------------------------//
 router.put("/salons/:id/block", salonController_1.salonvarification);
 // router.put("/salons/" , admin_login)

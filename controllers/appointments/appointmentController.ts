@@ -39,18 +39,43 @@ export const createAppointment = async (
   next: NextFunction
 ) => {
   try {
-    const { date, time, status, slot, salonId, service } = req.body;
+    const { date, time, status, slot, salonId, serviceId } = req.body;
     // TODO Multiple servce booking at a time
     const appointment = await prisma.appointment.create({
       data: {
-        date,
+        date : new Date(date),
         status,
         customer: { connect: { id: req.user?.id } },
         salon: { connect: { id: salonId } },
         service: {
-          connect: service,
+          connect: serviceId,
         },
       },
+    });
+
+    res.status(201).json({ success: true, data: appointment });
+  } catch (error: any) {
+    console.log(error)
+    res
+      .status(400)
+      .json({ error: "Unable to create Appointment", details: error.message });
+  }
+};
+
+export const updateAppointment = async (
+  req: MiddlewareInterface,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await prisma.appointment.update({
+      where: {
+        id: req.body.id,
+      },
+      data: req.body,
+    });
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: req.body.id },
     });
 
     res.status(201).json({ success: true, data: appointment });
@@ -60,8 +85,7 @@ export const createAppointment = async (
       .json({ error: "Unable to create Appointment", details: error.message });
   }
 };
-
-export const updateAppointment = async (
+export const cancelAppointment = async (
   req: MiddlewareInterface,
   res: Response,
   next: NextFunction

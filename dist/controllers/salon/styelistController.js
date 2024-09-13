@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removestylist = exports.updatestylist = exports.createstylist = void 0;
+exports.removestylist = exports.updatestylist = exports.servicestylists = exports.salonstylists = exports.createstylist = void 0;
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const prisma = new client_1.PrismaClient();
@@ -37,6 +37,42 @@ const createstylist = async (req, res, next) => {
     }
 };
 exports.createstylist = createstylist;
+const salonstylists = async (req, res, next) => {
+    const { salonId, } = req.body;
+    try {
+        // const user = await prisma.user.();
+        const salonWorkers = await prisma.salonWorker.findMany({ where: {
+                salonId
+            }, include: {
+                worker: true
+            } });
+        res.status(201).json({ success: true, data: salonWorkers });
+    }
+    catch (error) {
+        res
+            .status(400)
+            .json({ error: "Unable to create salon worker", details: error.message });
+    }
+};
+exports.salonstylists = salonstylists;
+const servicestylists = async (req, res, next) => {
+    const { salonId, } = req.body;
+    try {
+        // const user = await prisma.user.();
+        const salonWorkers = await prisma.salonWorker.findMany({ where: {
+                salonId
+            }, include: {
+                worker: true
+            } });
+        res.status(201).json({ success: true, data: salonWorkers });
+    }
+    catch (error) {
+        res
+            .status(400)
+            .json({ error: "Unable to create salon worker", details: error.message });
+    }
+};
+exports.servicestylists = servicestylists;
 const updatestylist = async () => { };
 exports.updatestylist = updatestylist;
 const removestylist = async () => { };

@@ -2,7 +2,7 @@ import express from "express";
 import signup from "../controllers/auth/signupController";
 import {  admin_login, login } from "../controllers/auth/loginController";
 import { createsalon, mysalons, salon, salonvarification, updatesalon, visitedSalons, visitSalon } from "../controllers/salon/salonController";
-import { createstylist, removestylist, updatestylist } from "../controllers/salon/styelistController";
+import { createstylist, removestylist, salonstylists, servicestylists, updatestylist } from "../controllers/salon/styelistController";
 import { isAdmin, isAuthenticated } from "../middlewares/auth";
 
 const router = express.Router();
@@ -30,6 +30,10 @@ router.get("/salon/:id",isAuthenticated,isAdmin,salon) // salon details
 router.post('/create-stylist' ,isAuthenticated,isAdmin, createstylist)
 router.put('/update-stylist' , isAuthenticated,isAdmin,updatestylist)
 router.put('/remove-stylist' ,isAuthenticated,isAdmin, removestylist)
+
+
+router.post('/salon-stylist' ,isAuthenticated, salonstylists)
+router.post('/stylist-services' ,isAuthenticated, servicestylists)
 
 // ---------------------------------- admin super admin ------------------------------------//
 router.put("/salons/:id/block" , salonvarification)
